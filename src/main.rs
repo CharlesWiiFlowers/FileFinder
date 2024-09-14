@@ -1,5 +1,4 @@
-use std::path::Path;
-use std::fs;
+use std::{fs, path::{self, Path}};
 use clap::Parser;
 
 // This is a macro
@@ -32,6 +31,27 @@ fn main() {
         }
     }
 
+}
+
+fn divide(filename: &str) -> (String, String) {
+    let _ = filename;
+    let mut file: String = String::from("");
+    let mut ext: String = String::from("");
+    let mut flag: bool = true;
+
+    // Include 0 and exclude lenght
+    for x in filename.chars().rev() {
+        if x != '.' && flag == true {
+            ext = ext + &x.to_string();
+        } else if x == '.' {
+            flag = false;
+        } else {
+            file = file + &x.to_string();
+        }
+    }
+
+    let tuple: (String, String) = (file, ext);
+    return tuple;
 }
 
 // Search a name in a dir
