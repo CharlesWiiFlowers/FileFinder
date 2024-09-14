@@ -1,5 +1,4 @@
-use std::path::Path;
-use std::fs;
+use std::{fs, io::Write, path::Path, sync::mpsc, thread, time::Duration};
 use clap::Parser;
 
 // This is a macro
@@ -19,16 +18,54 @@ struct Cli {
 }
 
 fn main() {
+    // Spinner section
+
+    // This gonna send a stop signal
+    // mpsc = multiple producer, single consumer
+    let(tx, rx) = mpsc::channel();
+
+    let spinner_handle = thread::spawn(move || {
+
+        // Vector with the future emoji spinner
+        let spinner_chars = vec!["🌕", "🌖", "🌗", "🌘", "🌑", "🌒", "🌓", "🌔"];
+        let mut i = 0;
+
+        loop {
+            // did I receive a stop sign?
+            if rx.try_recv().is_ok() {
+                break;
+            }
+
+            // So print the currecnt char of the spinner
+            // the index will be the result of divide de cycle number upper the spinner_chars lenght
+            print!("\r{} Loading... {}", spinner_chars[i % spinner_chars.len()], spinner_chars[i % spinner_chars.len()]);
+            i+=1;
+
+            std::io::stdout().flush().unwrap();
+            thread::sleep(Duration::from_millis(200))
+        }
+        
+    });
+
     let args = Cli::parse();
 
     match search(&args.root.to_string(), &args.filename.to_string()) {
         Some(paths) => {
+            // Send the STOP SIGNAL to the thread
+            tx.send(()).unwrap();
+            print!("\r");
             for path in paths {
-                println!("Founded: {}", path)
+                // Sender will be SEND a stop signal
+                println!("Founded: {}", path);
             }
+            
+            //Let it finish
+            let _ = spinner_handle.join();
         }
         None => {
-            println!("No matches found!!")
+            tx.send(()).unwrap();
+            println!("No matches found!!");
+            let _ = spinner_handle.join();
         }
     }
 
