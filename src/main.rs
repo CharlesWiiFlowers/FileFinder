@@ -1,4 +1,4 @@
-use std::{fs, path::{self, Path}};
+use std::{fs, io::Write, path::Path, sync::mpsc, thread, time::Duration};
 use clap::Parser;
 
 // This is a macro
@@ -18,40 +18,81 @@ struct Cli {
 }
 
 fn main() {
+    // Spinner section
+    // This gonna send a stop signal
+    // mpsc = multiple producer, single consumer
+    let(tx, rx) = mpsc::channel();
+
+    let spinner_handle = thread::spawn(move || {
+
+        // Vector with the future emoji spinner
+        let spinner_chars: Vec<&str> = vec!["🌕", "🌖", "🌗", "🌘", "🌑", "🌒", "🌓", "🌔"];
+        let mut i = 0;
+
+        loop {
+            // did I receive a stop sign?
+            if rx.try_recv().is_ok() {
+                break;
+            }
+
+            // So print the currecnt char of the spinner
+            // the index will be the result of divide de cycle number upper the spinner_chars lenght
+            print!("\r{} Loading... {}", spinner_chars[i % spinner_chars.len()], spinner_chars[i % spinner_chars.len()]);
+            i+=1;
+
+            std::io::stdout().flush().unwrap();
+            thread::sleep(Duration::from_millis(200))
+        }
+        
+    });
+
+    // Main Section
     let args = Cli::parse();
+    let divided_filename = divide(&args.filename.to_string());
 
     match search(&args.root.to_string(), &args.filename.to_string()) {
         Some(paths) => {
+            // Send the STOP SIGNAL to the thread
+            tx.send(()).unwrap();
+            print!("\r");
             for path in paths {
-                println!("Founded: {}", path)
+                // Sender will be SEND a stop signal
+                println!("Founded: {}", path);
             }
+            
+            //Let it finish
+            let _ = spinner_handle.join();
         }
         None => {
-            println!("No matches found!!")
+            tx.send(()).unwrap();
+            println!("No matches found!!");
+            let _ = spinner_handle.join();
         }
     }
 
 }
 
-fn divide(filename: &str) -> (String, String) {
-    let _ = filename;
-    let mut file: String = String::from("");
-    let mut ext: String = String::from("");
+fn divide(filename: &str) -> [String; 3] {
     let mut flag: bool = true;
+    let mut flag2:bool = true;
 
-    // Include 0 and exclude lenght
+    let mut divided_filename: [String; 3] = [String::new(), String::new(), String::new()];
+
     for x in filename.chars().rev() {
         if x != '.' && flag == true {
-            ext = ext + &x.to_string();
+            divided_filename[3] = divided_filename[3].clone() + &x.to_string();
         } else if x == '.' {
             flag = false;
+        } else if x != '\\' && flag2 == true && flag == false{
+            divided_filename[2] = divided_filename[2].clone() + &x.to_string();
+        } else if x == '\\' {
+            flag2 = false;
         } else {
-            file = file + &x.to_string();
+            divided_filename[1] = divided_filename[1].clone() + &x.to_string();
         }
     }
 
-    let tuple: (String, String) = (file, ext);
-    return tuple;
+    return divided_filename;
 }
 
 // Search a name in a dir
