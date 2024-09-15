@@ -1,5 +1,6 @@
 use std::{fs, io::Write, path::Path, sync::mpsc, thread, time::Duration};
 use clap::Parser;
+use prettytable::{row, Table};
 
 /*use prettytable::{Table, row, cell};
 
@@ -60,20 +61,25 @@ fn main() {
 
     // Main Section
     let args = Cli::parse();
-    let divided_filename = divide(&args.filename.to_string());
+    let mut table = Table::new();
 
     match search(&args.root.to_string(), &args.filename.to_string()) {
         Some(paths) => {
+
+            // Make the table's header
+            table.add_row(row!["Direction", "Name", "Extension"]);
+
             // Send the STOP SIGNAL to the thread
             tx.send(()).unwrap();
             print!("\r");
             for path in paths {
-                // Sender will be SEND a stop signal
-                println!("Founded: {}", path);
+                // For each path, add a new row to the table
+                table.add_row(row![divide(&path)[1],divide(&path)[1],divide(&path)[2]]);
             }
             
             //Let it finish
             let _ = spinner_handle.join();
+            table.printstd();
         }
         None => {
             tx.send(()).unwrap();
@@ -92,15 +98,15 @@ fn divide(filename: &str) -> [String; 3] {
 
     for x in filename.chars().rev() {
         if x != '.' && flag == true {
-            divided_filename[3] = divided_filename[3].clone() + &x.to_string();
+            divided_filename[2] = divided_filename[2].clone() + &x.to_string();
         } else if x == '.' {
             flag = false;
         } else if x != '\\' && flag2 == true && flag == false{
-            divided_filename[2] = divided_filename[2].clone() + &x.to_string();
+            divided_filename[1] = divided_filename[1].clone() + &x.to_string();
         } else if x == '\\' {
             flag2 = false;
         } else {
-            divided_filename[1] = divided_filename[1].clone() + &x.to_string();
+            divided_filename[0] = divided_filename[0].clone() + &x.to_string();
         }
     }
 
