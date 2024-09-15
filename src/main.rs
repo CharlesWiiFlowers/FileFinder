@@ -1,6 +1,18 @@
 use std::{fs, io::Write, path::Path, sync::mpsc, thread, time::Duration};
 use clap::Parser;
 
+/*use prettytable::{Table, row, cell};
+
+fn main() {
+    let mut table = Table::new();
+
+    table.add_row(row!["Nombre del archivo", "Tamaño", "Fecha"]);
+    table.add_row(row!["archivo1.txt", "1 KB", "2023-09-01"]);
+    table.add_row(row!["archivo2.jpg", "2 MB", "2023-08-30"]);
+
+    table.printstd();
+} */
+
 // This is a macro
 #[derive(Parser)]
 #[command(name = "search")]
