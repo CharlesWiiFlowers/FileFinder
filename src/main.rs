@@ -90,24 +90,21 @@ fn main() {
 
 }
 
+// TODO exception control
 fn divide(filename: &str) -> [String; 3] {
-    let mut flag: bool = true;
-    let mut flag2:bool = true;
-
     let mut divided_filename: [String; 3] = [String::new(), String::new(), String::new()];
 
-    for x in filename.chars().rev() {
-        if x != '.' && flag == true {
-            divided_filename[2] = divided_filename[2].clone() + &x.to_string();
-        } else if x == '.' {
-            flag = false;
-        } else if x != '\\' && flag2 == true && flag == false{
-            divided_filename[1] = divided_filename[1].clone() + &x.to_string();
-        } else if x == '\\' {
-            flag2 = false;
-        } else {
-            divided_filename[0] = divided_filename[0].clone() + &x.to_string();
-        }
+    let mut i = 0;
+    if let Some(last_dot) = filename.rfind('.'){
+        divided_filename[2] = filename[last_dot+1..].to_string();
+        i = last_dot+1;
+    }
+
+    if let Some(last_name) = filename.rfind('/').or_else(|| filename.rfind('\\')){
+        divided_filename[0] = filename[..last_name].to_string();
+        divided_filename[1] = filename[last_name+1..i].to_string();
+    } else {
+        divided_filename[1] = filename[..i].to_string();
     }
 
     return divided_filename;
