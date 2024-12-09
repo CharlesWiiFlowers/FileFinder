@@ -1,18 +1,5 @@
 use std::{fs, io::Write, path::Path, sync::mpsc, thread, time::Duration};
 use clap::Parser;
-use prettytable::{row, Table};
-
-/*use prettytable::{Table, row, cell};
-
-fn main() {
-    let mut table = Table::new();
-
-    table.add_row(row!["Nombre del archivo", "Tamaño", "Fecha"]);
-    table.add_row(row!["archivo1.txt", "1 KB", "2023-09-01"]);
-    table.add_row(row!["archivo2.jpg", "2 MB", "2023-08-30"]);
-
-    table.printstd();
-} */
 
 // This is a macro
 #[derive(Parser)]
@@ -61,53 +48,26 @@ fn main() {
 
     // Main Section
     let args = Cli::parse();
-    let mut table = Table::new();
 
     match search(&args.root.to_string(), &args.filename.to_string()) {
         Some(paths) => {
-
-            // Make the table's header
-            table.add_row(row!["Direction", "Name", "Extension"]);
-
             // Send the STOP SIGNAL to the thread
             tx.send(()).unwrap();
             print!("\r");
             for path in paths {
-                // For each path, add a new row to the table
-                table.add_row(row![divide(&path)[1],divide(&path)[1],divide(&path)[2]]);
+                println!("{path}");
             }
             
             //Let it finish
             let _ = spinner_handle.join();
-            table.printstd();
         }
         None => {
             tx.send(()).unwrap();
-            println!("No matches found!!");
+            println!("\nNo matches found!! 🚀");
             let _ = spinner_handle.join();
         }
     }
 
-}
-
-// TODO exception control
-fn divide(filename: &str) -> [String; 3] {
-    let mut divided_filename: [String; 3] = [String::new(), String::new(), String::new()];
-
-    let mut i = 0;
-    if let Some(last_dot) = filename.rfind('.'){
-        divided_filename[2] = filename[last_dot+1..].to_string();
-        i = last_dot+1;
-    }
-
-    if let Some(last_name) = filename.rfind('/').or_else(|| filename.rfind('\\')){
-        divided_filename[0] = filename[..last_name].to_string();
-        divided_filename[1] = filename[last_name+1..i].to_string();
-    } else {
-        divided_filename[1] = filename[..i].to_string();
-    }
-
-    return divided_filename;
 }
 
 // Search a name in a dir
