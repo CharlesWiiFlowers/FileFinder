@@ -1,0 +1,21 @@
+# This will be the TODO list
+
+## Commands to add
+
+### Probably Easy
+
+- FileTagger: Tag files or folders for find its quickly later!!
+
+### Probably not harder
+
+- FileLock: Shield a file using a password.
+- QuickLearn: Get quick explications about X theme on the CLI!!
+- DuplicateFinder: Detect duplicates files on your storage according to content or name.
+- FolderStats: Show stadistics of all folders on a dir.
+- OpenWith: Open a file using an specific application.
+
+### HARDER
+
+- ResumeSession: Open all of your last windows before to shut down.
+- MoodSetup: Change your space (background, theme) according your mood.
+- FindLargest: Search the biggers files in a root.
