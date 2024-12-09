@@ -19,7 +19,6 @@ struct Cli {
 
 fn main() {
     // Spinner section
-
     // This gonna send a stop signal
     // mpsc = multiple producer, single consumer
     let(tx, rx) = mpsc::channel();
@@ -27,7 +26,7 @@ fn main() {
     let spinner_handle = thread::spawn(move || {
 
         // Vector with the future emoji spinner
-        let spinner_chars = vec!["🌕", "🌖", "🌗", "🌘", "🌑", "🌒", "🌓", "🌔"];
+        let spinner_chars: Vec<&str> = vec!["🌕", "🌖", "🌗", "🌘", "🌑", "🌒", "🌓", "🌔"];
         let mut i = 0;
 
         loop {
@@ -47,6 +46,7 @@ fn main() {
         
     });
 
+    // Main Section
     let args = Cli::parse();
 
     match search(&args.root.to_string(), &args.filename.to_string()) {
@@ -55,8 +55,7 @@ fn main() {
             tx.send(()).unwrap();
             print!("\r");
             for path in paths {
-                // Sender will be SEND a stop signal
-                println!("Founded: {}", path);
+                println!("{path}");
             }
             
             //Let it finish
@@ -64,7 +63,7 @@ fn main() {
         }
         None => {
             tx.send(()).unwrap();
-            println!("No matches found!!");
+            println!("\nNo matches found!! 🚀");
             let _ = spinner_handle.join();
         }
     }
