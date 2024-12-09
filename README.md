@@ -1,26 +1,21 @@
 # File Finder CLI 📂🔍
 
-This simple CLI application written in Rust can search for files with a specified name in a given directory (Or the root system if you wanna). Below are several practical use cases where this tool can come in handy!
+This simple CLI application written in Rust can search for files with a specified name in a given directory (pr the root system if you want). Below are several practical use cases where this tool can come in handy!
+
+> [!IMPORTANT]
+> At the time, this just works on Windows!! 🪟
 
 ## Use Cases 💡
 
-### 1. 🧹 **Cleaning up duplicate files**
-
-   You can use this tool to locate files with the same name across different folders. For example, you may have `duplicate.txt` files scattered across your workspace. Use this tool to find them all and clean up your directories by removing or consolidating them.
-
-### 2. 💾 **Searching for specific project files**
+### 1. 💾 **Searching for specific project files**
 
    If you're working on a large project or repository with many subfolders, you can quickly locate configuration files like `README.md` or `Cargo.toml` without having to manually navigate through all the directories.
 
-### 3. 🕵️‍♂️ **File auditing and tracking**
-
-   In case of audits or compliance checks, you might want to locate all the instances of sensitive files (e.g., `config.json`, `.env`) in your system. This tool allows you to do just that, preventing possible security breaches.
-
-### 4. 💻 **System-wide file search**
+### 2. 💻 **System-wide file search**
 
    You can use this application to search for essential files (like `logs.txt`) across the entire system, whether it's for debugging, file recovery, or general system analysis.
 
-### 5. 📂 **Organizing media files**
+### 3. 📂 **Organizing media files**
 
    Whether it's music (`.mp3`), photos (`.jpg`, `.png`), or documents (`.pdf`), this tool can help you search and organize files based on their name. For example, quickly finding all your `family_photo_2023.jpg` files scattered across different folders.
 
@@ -30,7 +25,7 @@ This simple CLI application written in Rust can search for files with a specifie
 
 First, head over to the [File Finder repository](https://github.com/CharlesWiiFlowers/FileFinder) and download the `NameSearch.exe` file.
 
-1. Go to [File Finder repository](https://github.com/CharlesWiiFlowers/FileFinder).
+1. Go to [File Finder releases](https://github.com/CharlesWiiFlowers/FileFinder/releases).
 2. Download `NameSearch.exe` to your desired folder on your system.
 
 ### **Open CMD or PowerShell**
@@ -44,6 +39,9 @@ Next, open **CMD** or **PowerShell**.
    ```bash
    cd C:\path\to\your\folder
    ```
+
+> [!TIP]
+> Also, you can to add the `.exe` file on the environment variables for use it everywhere!! 
 
 ### **Run the Application**
 
@@ -96,16 +94,16 @@ Once the search begins, just sit tight! The application will display the full pa
    Once compiled, you can run the application from the terminal:
 
    ```bash
-   ./target/release/search --root <directory> <filename>
+   ./target/release/NameSearch  --file <filename> --root <directory>
    ```
 
-   - **directory**: The directory where you want to start the search.
+   - **directory**: The directory where you want to start the search. [OPTIONAL - DEFAULT: "C://"]
    - **filename**: The name of the file you're looking for.
 
 4. **Example Usage**
 
    ```bash
-   ./target/release/search --root /home/user/Documents report.txt
+   ./target/release/search report.txt --root /home/user/Documents
    ```
 
    This will search for `report.txt` in the `Documents` folder and all its subfolders.
