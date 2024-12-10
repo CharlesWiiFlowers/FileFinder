@@ -1,4 +1,4 @@
-use std::{fs, io::Write, path::Path, sync::mpsc, thread, time::Duration};
+use std::{fs, io::Write, path::Path, sync::mpsc, thread, time::{Duration, Instant}};
 use clap::Parser;
 
 // This is a macro
@@ -18,6 +18,10 @@ struct Cli {
 }
 
 fn main() {
+
+    // Time elapsed
+    let now = Instant::now();
+
     // Spinner section
     // This gonna send a stop signal
     // mpsc = multiple producer, single consumer
@@ -41,7 +45,7 @@ fn main() {
             i+=1;
 
             std::io::stdout().flush().unwrap();
-            thread::sleep(Duration::from_millis(200))
+            thread::sleep(Duration::from_millis(200));
         }
         
     });
@@ -58,12 +62,14 @@ fn main() {
                 println!("{path}");
             }
             
+            println!("Work finished!! 🐾\nTranscurred time: {} ms", now.elapsed().as_millis());
+
             //Let it finish
             let _ = spinner_handle.join();
         }
         None => {
             tx.send(()).unwrap();
-            println!("\nNo matches found!! 🚀");
+            println!("\nNo matches found!! 🚀\nTranscurred time: {} ms", now.elapsed().as_millis());
             let _ = spinner_handle.join();
         }
     }
