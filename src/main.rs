@@ -8,15 +8,16 @@ use std::{
 };
 
 // This is a macro
-#[derive(Parser)]
+#[derive(Debug, Parser)]
 #[command(about = "A toolbox of utilities", long_about = "")]
 struct Cli {
     #[clap(subcommand)]
     command: Commands,
 }
 
-#[derive(Subcommand)]
+#[derive(Debug, Subcommand)]
 enum Commands {
+    #[command(alias="search", about="Files by name", long_about="Find files using their names")]
     Find {
         #[clap(short, long)]
         filename: String,
