@@ -72,7 +72,7 @@ fn main() {
                     tx.send(()).unwrap();
                     print!("\r");
 
-                    print!("🐳 Finded {} results!! 🐳", paths.len());
+                    print!("🐳 Found {} results!! 🐳", paths.len());
 
                     for path in paths {
                         println!("{path}");
