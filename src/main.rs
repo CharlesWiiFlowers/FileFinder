@@ -22,7 +22,7 @@ enum Commands {
         #[clap(short, long)]
         filename: String,
 
-        #[clap(short, long, default_value = "C://")]
+        #[clap(short, long, default_value = "C:\\")]
         root: String,
     },
 }
@@ -62,7 +62,6 @@ fn main() {
     });
 
     // Main Section
-
     let cli = Cli::parse();
 
     match cli.command {
@@ -72,12 +71,15 @@ fn main() {
                     // Send the STOP SIGNAL to the thread
                     tx.send(()).unwrap();
                     print!("\r");
+
+                    print!("🐳 Finded {} results!! 🐳", paths.len());
+
                     for path in paths {
                         println!("{path}");
                     }
 
                     println!(
-                        "Work finished!! 🐾\nTranscurred time: {} ms",
+                        "🐾 Work finished!! 🐾\nTranscurred time: {} ms",
                         now.elapsed().as_millis()
                     );
 
@@ -87,7 +89,7 @@ fn main() {
                 None => {
                     tx.send(()).unwrap();
                     println!(
-                        "\nNo matches found!! 🚀\nTranscurred time: {} ms",
+                        "\n🚀 No matches found!! 🚀\nTranscurred time: {} ms",
                         now.elapsed().as_millis()
                     );
                     let _ = spinner_handle.join();
