@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use commands::find_file;
+use commands::{find_file, add_tag_file};
 use std::{
     io::Write,
     sync::mpsc,
@@ -10,6 +10,7 @@ use std::{
 // This is a macro
 #[derive(Debug, Parser)]
 #[command(about = "A toolbox of utilities", long_about = "")]
+
 struct Cli {
     #[clap(subcommand)]
     command: Commands,
@@ -17,13 +18,34 @@ struct Cli {
 
 #[derive(Debug, Subcommand)]
 enum Commands {
-    #[command(alias="search", about="Files by name", long_about="Find files using their names")]
+    #[command(
+        alias = "search",
+        about = "Files by name",
+        long_about = "Find files using their names"
+    )]
     Find {
         #[clap(short, long)]
         filename: String,
 
         #[clap(short, long, default_value = "C:\\")]
         root: String,
+    },
+
+    #[command(alias = "tagger", about = "Tag your files for find it quickly!")]
+    Tag {
+        #[clap(subcommand)]
+        command: TagCommands,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+enum TagCommands {
+    Add {
+        #[clap(short, long)]
+        path: String,
+
+        #[clap(short, long)]
+        tag: String,
     },
 }
 
@@ -64,7 +86,9 @@ fn main() {
     // Main Section
     let cli = Cli::parse();
 
+    // Match with the commands
     match cli.command {
+        // If match to 'Find' command...
         Commands::Find { filename, root } => {
             match find_file(&root, &filename) {
                 Some(paths) => {
@@ -72,7 +96,7 @@ fn main() {
                     tx.send(()).unwrap();
                     print!("\r");
 
-                    print!("🐳 Found {} results!! 🐳", paths.len());
+                    println!("🐳 Found {} results!! 🐳", paths.len());
 
                     for path in paths {
                         println!("{path}");
@@ -93,6 +117,22 @@ fn main() {
                         now.elapsed().as_millis()
                     );
                     let _ = spinner_handle.join();
+                }
+            }
+        }
+        // If match to 'tag' command
+        Commands::Tag { command } => {
+            
+            // Send the STOP SIGNAL to the thread
+            tx.send(()).unwrap();
+            print!("\r");
+            let _ = spinner_handle.join();
+            
+            // Verify the subcommands
+            match command {
+
+                TagCommands::Add { path, tag } => {
+                    add_tag_file(&path, &tag);
                 }
             }
         }
